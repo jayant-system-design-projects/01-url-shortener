@@ -4,6 +4,7 @@ dotenv==0.9.9
 
 # API Packages
 fastapi==0.115.9
+uvicorn==0.50.0
 pydantic==2.12.5
 
 # Database packages

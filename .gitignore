@@ -95,7 +95,6 @@ service_account.json
 # ==========================
 # Model Files (Optional)
 # ==========================
-models/
 checkpoints/
 *.ckpt
 *.pth

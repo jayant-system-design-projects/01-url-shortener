@@ -26,10 +26,10 @@ async def create_shorten_url(
     )
 
 
-@shorten_url_router.get("/shortenURL/{checksum}")
+@shorten_url_router.get("/shortenURL/{short_code}")
 async def redirect_url(
-    checksum: str, db_session: AsyncSession = Depends(get_async_db_session)
+    short_code: str, db_session: AsyncSession = Depends(get_async_db_session)
 ):
-    original_url = await create_redirect_url_handler(db_session, checksum)
+    original_url = await create_redirect_url_handler(db_session, short_code)
 
     return RedirectResponse(url=original_url, status_code=302)

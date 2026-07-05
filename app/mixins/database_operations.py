@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 from typing import Optional
 from app.models.urls import URLS
-from app.utils.url_shortener_utils import _create_checksum
+from app.utils.url_shortener_utils import _create_short_code
 from app.log_base import get_logger
 
 logger = get_logger(__name__)
@@ -11,7 +11,7 @@ logger = get_logger(__name__)
 
 async def _get_url_object(db_session: AsyncSession, url: str) -> Optional[URLS]:
     """
-    Get the url object from db based on checksum.
+    Get the url object from db based on short_code.
 
     Parameters
     ----------
@@ -26,9 +26,11 @@ async def _get_url_object(db_session: AsyncSession, url: str) -> Optional[URLS]:
        The urls object from the database
     """
     try:
-        checksum = _create_checksum(url)
+        short_code = _create_short_code(url)
 
-        result = await db_session.execute(select(URLS).where(URLS.checksum == checksum))
+        result = await db_session.execute(
+            select(URLS).where(URLS.short_code == short_code)
+        )
 
         url_object = result.scalar_one_or_none()
 
@@ -43,11 +45,11 @@ async def _get_url_object(db_session: AsyncSession, url: str) -> Optional[URLS]:
         raise
 
 
-async def _get_url_object_by_checksum(
-    db_session: AsyncSession, checksum: str
+async def _get_url_object_by_short_code(
+    db_session: AsyncSession, short_code: str
 ) -> Optional[URLS]:
     """
-    Get the url object from db based on checksum.
+    Get the url object from db based on short_code.
 
     Parameters
     ----------
@@ -62,7 +64,9 @@ async def _get_url_object_by_checksum(
        The urls object from the database
     """
     try:
-        result = await db_session.execute(select(URLS).where(URLS.checksum == checksum))
+        result = await db_session.execute(
+            select(URLS).where(URLS.short_code == short_code)
+        )
 
         url_object = result.scalar_one_or_none()
 
@@ -79,7 +83,7 @@ async def _get_url_object_by_checksum(
 
 async def _save_url_in_db(db_session: AsyncSession, url: str):
     """
-    Save the url object in db based on checksum if url does not exist.
+    Save the url object in db based on short_code if url does not exist.
 
     Parameters
     ----------
@@ -90,20 +94,20 @@ async def _save_url_in_db(db_session: AsyncSession, url: str):
 
     Returns
     -------
-    checksum: str
-       Checksum of original url in db.
+    short_code: str
+       short_code of original url in db.
     """
 
     try:
         url_object = await _get_url_object(db_session, url)
 
         if url_object:
-            return url_object.checksum
+            return url_object.short_code
 
-        checksum = _create_checksum(url)
-        db_session.add(URLS(original_url=url, checksum=checksum))
+        short_code = _create_short_code(url)
+        db_session.add(URLS(original_url=url, short_code=short_code))
         await db_session.commit()
-        return checksum
+        return short_code
     except SQLAlchemyError as sqlerror:
         await db_session.rollback()
         logger.error(f"Database error : {sqlerror}", exc_info=True)

@@ -1,0 +1,13 @@
+# Other Packages
+asyncio==4.0.0
+dotenv==0.9.9
+
+# API Packages
+fastapi==0.115.9
+pydantic==2.12.5
+
+# Database packages
+SQLAlchemy==2.0.40
+alembic==1.18.4
+asyncpg==0.31.0
+psycopg2==2.9.12

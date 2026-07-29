@@ -34,6 +34,11 @@ async def _get_url_object(db_session: AsyncSession, url: str) -> Optional[URLS]:
 
         url_object = result.scalar_one_or_none()
 
+        if url_object:
+            logger.info("Found existing URL object for short code %s", short_code)
+        else:
+            logger.info("No URL object found for short code %s", short_code)
+
         return url_object
 
     except SQLAlchemyError as sqlerror:
@@ -70,6 +75,11 @@ async def _get_url_object_by_short_code(
 
         url_object = result.scalar_one_or_none()
 
+        if url_object:
+            logger.info("Found URL object for short code %s", short_code)
+        else:
+            logger.info("No URL object found for short code %s", short_code)
+
         return url_object
 
     except SQLAlchemyError as sqlerror:
@@ -102,11 +112,13 @@ async def _save_url_in_db(db_session: AsyncSession, url: str):
         url_object = await _get_url_object(db_session, url)
 
         if url_object:
+            logger.info("Using existing short code %s", url_object.short_code)
             return url_object.short_code
 
         short_code = _create_short_code(url)
         db_session.add(URLS(original_url=url, short_code=short_code))
         await db_session.commit()
+        logger.info("Saved new URL with short code %s", short_code)
         return short_code
     except SQLAlchemyError as sqlerror:
         await db_session.rollback()

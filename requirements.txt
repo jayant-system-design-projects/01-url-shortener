@@ -12,3 +12,10 @@ SQLAlchemy==2.0.40
 alembic==1.18.4
 asyncpg==0.31.0
 psycopg2==2.9.12
+
+#Redis packages
+redis==8.0.1
+hiredis==3.4.0
+
+# Schedulers
+APScheduler==3.11.3
